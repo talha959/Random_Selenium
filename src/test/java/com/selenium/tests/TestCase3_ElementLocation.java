@@ -62,6 +62,30 @@ public class TestCase3_ElementLocation {
         }
     }
     
+    private WebElement locateAndReport(By locator, String locatorType, String screenshotName) {
+        try {
+            WebElement element = chromeDriver.findElement(locator);
+            System.out.println("✓ Located element by " + locatorType);
+            takeScreenshot(chromeDriver, screenshotName);
+            return element;
+        } catch (Exception e) {
+            System.out.println("⚠ Element with " + locatorType + " not found");
+            return null;
+        }
+    }
+    
+    private WebElement locateAndReportWithWait(By locator, String locatorType, String screenshotName) {
+        try {
+            WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            System.out.println("✓ Located element by " + locatorType);
+            takeScreenshot(chromeDriver, screenshotName);
+            return element;
+        } catch (Exception e) {
+            System.out.println("⚠ Element with " + locatorType + " not found");
+            return null;
+        }
+    }
+    
     @Test
     @DisplayName("Element Location Using By Class")
     public void testElementLocation() {
@@ -80,40 +104,26 @@ public class TestCase3_ElementLocation {
         
         try {
             Thread.sleep(2000);
-            
             System.out.println("\n--- Locating Elements Using By Class ---");
-            try {
-                WebElement elementById = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("checkBoxOption1"))
-                );
-                System.out.println("✓ Located element by ID: checkBoxOption1");
+            
+            WebElement elementById = locateAndReportWithWait(By.id("checkBoxOption1"), "ID: checkBoxOption1", "Step3_LocatedByID");
+            if (elementById != null) {
                 System.out.println("  Element tag: " + elementById.getTagName());
                 System.out.println("  Element type: " + elementById.getAttribute("type"));
-                takeScreenshot(chromeDriver, "Step3_LocatedByID");
-            } catch (Exception e) {
-                System.out.println("⚠ Element with ID 'checkBoxOption1' not found");
             }
             
-            try {
-                WebElement elementByName = chromeDriver.findElement(By.name("radioButton"));
-                System.out.println("✓ Located element by Name: radioButton");
+            WebElement elementByName = locateAndReport(By.name("radioButton"), "Name: radioButton", "Step3_LocatedByName");
+            if (elementByName != null) {
                 System.out.println("  Element type: " + elementByName.getAttribute("type"));
                 System.out.println("  Element value: " + elementByName.getAttribute("value"));
-                takeScreenshot(chromeDriver, "Step3_LocatedByName");
-            } catch (Exception e) {
-                System.out.println("⚠ Element with Name 'radioButton' not found");
             }
             
-            try {
-                List<WebElement> elementsByClass = chromeDriver.findElements(By.className("radio1"));
-                if (elementsByClass.isEmpty()) {
-                    elementsByClass = chromeDriver.findElements(By.className("wp-block-group"));
-                }
-                System.out.println("✓ Located " + elementsByClass.size() + " element(s) by Class Name");
-                takeScreenshot(chromeDriver, "Step3_LocatedByClassName");
-            } catch (Exception e) {
-                System.out.println("⚠ Elements with Class Name not found");
+            List<WebElement> elementsByClass = chromeDriver.findElements(By.className("radio1"));
+            if (elementsByClass.isEmpty()) {
+                elementsByClass = chromeDriver.findElements(By.className("wp-block-group"));
             }
+            System.out.println("✓ Located " + elementsByClass.size() + " element(s) by Class Name");
+            takeScreenshot(chromeDriver, "Step3_LocatedByClassName");
             
             List<WebElement> links = chromeDriver.findElements(By.tagName("a"));
             System.out.println("✓ Located " + links.size() + " element(s) by Tag Name: a (links)");
@@ -121,44 +131,17 @@ public class TestCase3_ElementLocation {
             List<WebElement> inputs = chromeDriver.findElements(By.tagName("input"));
             System.out.println("✓ Located " + inputs.size() + " element(s) by Tag Name: input");
             
-            try {
-                WebElement elementByCss = chromeDriver.findElement(By.cssSelector("input[type='radio']"));
-                System.out.println("✓ Located element by CSS Selector: input[type='radio']");
+            WebElement elementByCss = locateAndReport(By.cssSelector("input[type='radio']"), "CSS Selector: input[type='radio']", "Step3_LocatedByCSS");
+            if (elementByCss != null) {
                 System.out.println("  Element ID: " + elementByCss.getAttribute("id"));
-                takeScreenshot(chromeDriver, "Step3_LocatedByCSS");
-            } catch (Exception e) {
-                System.out.println("⚠ Element with CSS Selector not found");
             }
             
-            try {
-                WebElement elementByXpath = chromeDriver.findElement(
-                    By.xpath("//input[@type='radio']")
-                );
-                System.out.println("✓ Located element by XPath: //input[@type='radio']");
-                System.out.println("  Element type: " + elementByXpath.getAttribute("type"));
-                takeScreenshot(chromeDriver, "Step3_LocatedByXPath");
-            } catch (Exception e) {
-                System.out.println("⚠ Element with XPath not found");
-            }
-            
-            try {
-                WebElement elementByLinkText = chromeDriver.findElement(By.linkText("Home"));
-                System.out.println("✓ Located element by Link Text: Home");
+            WebElement elementByLinkText = locateAndReport(By.linkText("Home"), "Link Text: Home", "Step3_LocatedByLinkText");
+            if (elementByLinkText != null) {
                 System.out.println("  Link href: " + elementByLinkText.getAttribute("href"));
-                takeScreenshot(chromeDriver, "Step3_LocatedByLinkText");
-            } catch (Exception e) {
-                System.out.println("⚠ Link with exact text 'Home' not found");
             }
             
-            try {
-                WebElement elementByPartialLink = chromeDriver.findElement(
-                    By.partialLinkText("Courses")
-                );
-                System.out.println("✓ Located element by Partial Link Text: Courses");
-                takeScreenshot(chromeDriver, "Step3_LocatedByPartialLinkText");
-            } catch (Exception e) {
-                System.out.println("⚠ Link with partial text not found");
-            }
+            locateAndReport(By.partialLinkText("Courses"), "Partial Link Text: Courses", "Step3_LocatedByPartialLinkText");
             
         } catch (Exception e) {
             System.out.println("Error during element location: " + e.getMessage());

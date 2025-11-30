@@ -64,6 +64,82 @@ public class TestCase5_ComprehensiveScenarioFirefox {
         }
     }
     
+    private WebElement locateElementWithWait(WebDriverWait wait, By locator, String description) {
+        WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        System.out.println("✓ Located " + description);
+        return element;
+    }
+    
+    private WebElement locateElement(By locator, String description) {
+        WebElement element = firefoxDriver.findElement(locator);
+        System.out.println("✓ Located " + description);
+        return element;
+    }
+    
+    private void locateElementsByTag(String tagName, String description) {
+        List<WebElement> elements = firefoxDriver.findElements(By.tagName(tagName));
+        System.out.println("✓ Located " + elements.size() + " " + description);
+    }
+    
+    private void interactWithRadio(WebElement radioButton, String screenshotName) {
+        System.out.println("Action 1: ✓ Radio button attributes - Type: " + radioButton.getAttribute("type") + 
+                         ", ID: " + radioButton.getAttribute("id") + ", Value: " + radioButton.getAttribute("value") + 
+                         ", Displayed: " + radioButton.isDisplayed() + ", Enabled: " + radioButton.isEnabled());
+        radioButton.click();
+        System.out.println("Action 2: ✓ Clicked radio button");
+        System.out.println("  Radio button is selected: " + radioButton.isSelected());
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
+    private void interactWithCheckbox(WebElement checkbox, String screenshotName) {
+        if (!checkbox.isSelected()) {
+            checkbox.click();
+            System.out.println("Action 3: ✓ Clicked checkbox");
+        } else {
+            System.out.println("Action 3: ✓ Checkbox already selected");
+        }
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
+    private void interactWithDropdown(WebElement dropdown, String optionToSelect, String screenshotName) {
+        Select select = new Select(dropdown);
+        List<WebElement> options = select.getOptions();
+        System.out.println("Action 4: ✓ Dropdown has " + options.size() + " options");
+        if (!options.isEmpty()) {
+            select.selectByVisibleText(optionToSelect);
+            System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
+        }
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
+    private void interactWithInput(WebElement input, String text, String screenshotName) {
+        input.clear();
+        input.sendKeys(text);
+        System.out.println("Action 5: ✓ Entered text in autocomplete field");
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
+    private void interactWithLink(WebElement link) {
+        System.out.println("Action 6: ✓ Link attributes - Text: " + link.getText() + ", Href: " + link.getAttribute("href"));
+    }
+    
+    private void interactWithTable(WebElement table, String screenshotName) {
+        List<WebElement> tableRows = table.findElements(By.tagName("tr"));
+        System.out.println("Action 7: ✓ Web table has " + tableRows.size() + " rows");
+        List<WebElement> tableHeaders = table.findElements(By.tagName("th"));
+        if (!tableHeaders.isEmpty()) {
+            System.out.println("  Table headers: " + tableHeaders.get(0).getText() + ", " + 
+                             tableHeaders.get(1).getText() + ", " + tableHeaders.get(2).getText());
+        }
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
+    private void scrollToElement(WebElement element, String screenshotName) {
+        ((JavascriptExecutor) firefoxDriver).executeScript("arguments[0].scrollIntoView(true);", element);
+        System.out.println("Action 12: ✓ Scrolled to table element");
+        takeScreenshot(firefoxDriver, screenshotName);
+    }
+    
     @Test
     @DisplayName("Comprehensive Usability and Functionality Test - Firefox")
     public void testComprehensiveScenarioFirefox() {
@@ -96,101 +172,30 @@ public class TestCase5_ComprehensiveScenarioFirefox {
                 Assertions.assertFalse(title.isEmpty());
                 
                 System.out.println("\n--- Step 3: Locate Elements Using By Class (Firefox) ---");
-                
-                WebElement radioButton = firefoxWait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.name("radioButton"))
-                );
-                System.out.println("✓ Located radio button using By.name('radioButton')");
-                
-                WebElement checkbox = firefoxDriver.findElement(By.id("checkBoxOption1"));
-                System.out.println("✓ Located checkbox using By.id('checkBoxOption1')");
-                
-                WebElement dropdown = firefoxDriver.findElement(By.id("dropdown-class-example"));
-                System.out.println("✓ Located dropdown using By.id('dropdown-class-example')");
-                
-                WebElement tableElement = firefoxDriver.findElement(By.id("product"));
-                System.out.println("✓ Located table using By.id('product')");
-                
-                WebElement autocomplete = firefoxDriver.findElement(By.id("autocomplete"));
-                System.out.println("✓ Located autocomplete using By.id('autocomplete')");
-                
-                List<WebElement> allInputs = firefoxDriver.findElements(By.tagName("input"));
-                System.out.println("✓ Located " + allInputs.size() + " input elements using By.tagName('input')");
-                
-                List<WebElement> allLinks = firefoxDriver.findElements(By.tagName("a"));
-                System.out.println("✓ Located " + allLinks.size() + " link elements using By.tagName('a')");
-                
-                WebElement homeLink = firefoxDriver.findElement(By.linkText("Home"));
-                System.out.println("✓ Located link using By.linkText('Home')");
-                
+                WebElement radioButton = locateElementWithWait(firefoxWait, By.name("radioButton"), "radio button using By.name('radioButton')");
+                WebElement checkbox = locateElement(By.id("checkBoxOption1"), "checkbox using By.id('checkBoxOption1')");
+                WebElement dropdown = locateElement(By.id("dropdown-class-example"), "dropdown using By.id('dropdown-class-example')");
+                WebElement tableElement = locateElement(By.id("product"), "table using By.id('product')");
+                WebElement autocomplete = locateElement(By.id("autocomplete"), "autocomplete using By.id('autocomplete')");
+                locateElementsByTag("input", "input elements using By.tagName('input')");
+                locateElementsByTag("a", "link elements using By.tagName('a')");
+                WebElement homeLink = locateElement(By.linkText("Home"), "link using By.linkText('Home')");
                 takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedAllElements");
                 
                 System.out.println("\n--- Step 4: Perform Actions on Located Web Elements (Firefox) ---");
+                interactWithRadio(radioButton, "Step4_FirefoxAction2_ClickedRadio");
+                interactWithCheckbox(checkbox, "Step4_FirefoxAction3_CheckboxInteraction");
+                interactWithDropdown(dropdown, "Selenium", "Step4_FirefoxAction4_DropdownSelected");
+                interactWithInput(autocomplete, "Canada", "Step4_FirefoxAction5_Autocomplete");
+                interactWithLink(homeLink);
+                interactWithTable(tableElement, "Step4_FirefoxAction7_TableInfo");
                 
-                String radioType = radioButton.getAttribute("type");
-                String radioId = radioButton.getAttribute("id");
-                String radioValue = radioButton.getAttribute("value");
-                boolean isRadioDisplayed = radioButton.isDisplayed();
-                boolean isRadioEnabled = radioButton.isEnabled();
-                System.out.println("Action 1: ✓ Radio button attributes - Type: " + radioType + 
-                                 ", ID: " + radioId + ", Value: " + radioValue + 
-                                 ", Displayed: " + isRadioDisplayed + ", Enabled: " + isRadioEnabled);
-                
-                radioButton.click();
-                System.out.println("Action 2: ✓ Clicked radio button");
-                boolean isRadioSelected = radioButton.isSelected();
-                System.out.println("  Radio button is selected: " + isRadioSelected);
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction2_ClickedRadio");
-                
-                if (!checkbox.isSelected()) {
-                    checkbox.click();
-                    System.out.println("Action 3: ✓ Clicked checkbox");
-                } else {
-                    System.out.println("Action 3: ✓ Checkbox already selected");
-                }
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction3_CheckboxInteraction");
-                
-                Select select = new Select(dropdown);
-                List<WebElement> options = select.getOptions();
-                System.out.println("Action 4: ✓ Dropdown has " + options.size() + " options");
-                if (!options.isEmpty()) {
-                    select.selectByVisibleText("Selenium");
-                    System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
-                }
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction4_DropdownSelected");
-                
-                autocomplete.clear();
-                autocomplete.sendKeys("Canada");
-                System.out.println("Action 5: ✓ Entered text in autocomplete field");
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction5_Autocomplete");
-                
-                String linkHref = homeLink.getAttribute("href");
-                String linkText = homeLink.getText();
-                System.out.println("Action 6: ✓ Link attributes - Text: " + linkText + ", Href: " + linkHref);
-                
-                List<WebElement> tableRows = tableElement.findElements(By.tagName("tr"));
-                System.out.println("Action 7: ✓ Web table has " + tableRows.size() + " rows");
-                List<WebElement> tableHeaders = tableElement.findElements(By.tagName("th"));
-                if (!tableHeaders.isEmpty()) {
-                    System.out.println("  Table headers: " + tableHeaders.get(0).getText() + ", " + 
-                                     tableHeaders.get(1).getText() + ", " + tableHeaders.get(2).getText());
-                }
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction7_TableInfo");
-                
-                String currentUrl = firefoxDriver.getCurrentUrl();
-                System.out.println("Action 9: ✓ Current URL: " + currentUrl);
-                
-                String pageSource = firefoxDriver.getPageSource();
-                System.out.println("Action 10: ✓ Page source length: " + pageSource.length() + " characters");
-                
+                System.out.println("Action 9: ✓ Current URL: " + firefoxDriver.getCurrentUrl());
+                System.out.println("Action 10: ✓ Page source length: " + firefoxDriver.getPageSource().length() + " characters");
                 org.openqa.selenium.Dimension windowSize = firefoxDriver.manage().window().getSize();
-                System.out.println("Action 11: ✓ Window size - Width: " + windowSize.getWidth() + 
-                                 ", Height: " + windowSize.getHeight());
+                System.out.println("Action 11: ✓ Window size - Width: " + windowSize.getWidth() + ", Height: " + windowSize.getHeight());
                 
-                ((JavascriptExecutor) firefoxDriver)
-                    .executeScript("arguments[0].scrollIntoView(true);", tableElement);
-                System.out.println("Action 12: ✓ Scrolled to table element");
-                takeScreenshot(firefoxDriver, "Step4_FirefoxAction12_ScrolledToTable");
+                scrollToElement(tableElement, "Step4_FirefoxAction12_ScrolledToTable");
                 
                 System.out.println("\n✓ All usability and functionality checks completed successfully in Firefox!");
                 takeScreenshot(firefoxDriver, "Step4_FirefoxFinalResult");

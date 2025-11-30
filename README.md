@@ -6,11 +6,12 @@ This project demonstrates Selenium WebDriver test cases for usability and functi
 
 This project includes:
 - ✅ Chrome and Firefox driver setup and navigation
-- ✅ Element location using all 8 By locator strategies
+- ✅ Element location using 7 By locator strategies (ID, Name, ClassName, TagName, CSS Selector, LinkText, PartialLinkText)
 - ✅ Performing actions on web elements
 - ✅ Comprehensive test cases for usability and functionality testing
 - ✅ Step-by-step screenshots for all procedures
 - ✅ Single entry point (TestSuite) to run all tests
+- ✅ Simplified code with reusable helper methods
 
 ## 🎯 Assignment Requirements (Q3)
 
@@ -19,7 +20,7 @@ This project fulfills all requirements:
 1. ✅ **Download selenium driver** for Chrome or Firefox (using WebDriverManager)
 2. ✅ **Create instance** for Chrome/Firefox driver
 3. ✅ **Select a random website** and navigate to it (`https://www.codenboxautomationlab.com/practice/`)
-4. ✅ **Locate elements** on web using By class (8 different strategies)
+4. ✅ **Locate elements** on web using By class (7 different strategies)
 5. ✅ **Perform actions** on located web elements
 6. ✅ **Usability testing** - Element visibility, enabled state, window management
 7. ✅ **Functionality testing** - Form interactions, navigation, data extraction
@@ -141,16 +142,16 @@ Random_Selenium/
 ### Test Case 3: Element Location Using By Class
 - **File:** `TestCase3_ElementLocation.java` (Chrome)
 - **File:** `TestCase3_ElementLocationFirefox.java` (Firefox)
-- **Purpose:** Demonstrate all 8 element location strategies
+- **Purpose:** Demonstrate 7 element location strategies
 - **Locators Demonstrated:**
   - `By.id()` - Locate by element ID
   - `By.name()` - Locate by name attribute
   - `By.className()` - Locate by CSS class
   - `By.tagName()` - Locate by HTML tag
   - `By.cssSelector()` - Locate by CSS selector
-  - `By.xpath()` - Locate by XPath expression
   - `By.linkText()` - Locate link by exact text
   - `By.partialLinkText()` - Locate link by partial text
+- **Code Features:** Simplified with reusable helper methods (`locateAndReport`, `locateAndReportWithWait`)
 - **Screenshots:** Captured for each locator type
 
 ### Test Case 4: Performing Actions on Web Elements
@@ -168,6 +169,7 @@ Random_Selenium/
   - `getText()` - Get element text
   - Dropdown selection using `Select` class
   - Table interaction
+- **Code Features:** Simplified with reusable helper methods (`findElementSafe`, `interactWithCheckbox`, `interactWithDropdown`, `interactWithInput`, `interactWithLink`, `interactWithTable`)
 
 ### Test Case 5: Comprehensive Usability and Functionality Test
 - **File:** `TestCase5_ComprehensiveScenario.java` (Chrome)
@@ -180,6 +182,7 @@ Random_Selenium/
   - Multiple element interactions
   - JavaScript execution (scrolling)
   - Comprehensive screenshots
+- **Code Features:** Simplified with reusable helper methods for element location and interaction (`locateElementWithWait`, `locateElement`, `interactWithRadio`, `interactWithCheckbox`, `interactWithDropdown`, `interactWithInput`, `interactWithLink`, `interactWithTable`, `scrollToElement`)
 
 ## 🖼️ Screenshots
 
@@ -301,9 +304,6 @@ List<WebElement> links = driver.findElements(By.tagName("a"));
 // By CSS Selector
 WebElement element = driver.findElement(By.cssSelector("input[type='radio']"));
 
-// By XPath
-WebElement element = driver.findElement(By.xpath("//input[@type='radio']"));
-
 // By Link Text
 WebElement link = driver.findElement(By.linkText("Home"));
 
@@ -407,7 +407,8 @@ String text = element.getText();
 
 - ✅ **Automatic Driver Management** - WebDriverManager handles driver downloads
 - ✅ **Cross-Browser Testing** - Tests for both Chrome and Firefox
-- ✅ **Comprehensive Coverage** - All 8 By locator strategies demonstrated
+- ✅ **Comprehensive Coverage** - 7 By locator strategies demonstrated
+- ✅ **Simplified Code** - Reusable helper methods for better maintainability
 - ✅ **Automatic Screenshots** - Every step captured automatically
 - ✅ **Error Handling** - Graceful handling of missing browsers
 - ✅ **Detailed Logging** - Step-by-step console output
@@ -423,6 +424,8 @@ String text = element.getText();
 - Screenshots are automatically saved in the `screenshots/` directory
 - Test website: `https://www.codenboxautomationlab.com/practice/`
 - Firefox tests will be skipped if Firefox is not installed (Chrome tests will still run)
+- **Code Simplification:** Test cases 3, 4, and 5 use reusable helper methods to reduce code duplication and improve maintainability
+- **Locator Strategy:** Uses 7 By locator strategies (XPath removed for consistency with CSS Selector usage)
 
 ## 👨‍💻 Usage in Apache NetBeans
 

@@ -61,6 +61,30 @@ public class TestCase3_ElementLocationFirefox {
         }
     }
     
+    private WebElement locateAndReport(By locator, String locatorType, String screenshotName) {
+        try {
+            WebElement element = firefoxDriver.findElement(locator);
+            System.out.println("✓ Located element by " + locatorType);
+            takeScreenshot(firefoxDriver, screenshotName);
+            return element;
+        } catch (Exception e) {
+            System.out.println("⚠ Element with " + locatorType + " not found");
+            return null;
+        }
+    }
+    
+    private WebElement locateAndReportWithWait(WebDriverWait wait, By locator, String locatorType, String screenshotName) {
+        try {
+            WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            System.out.println("✓ Located element by " + locatorType);
+            takeScreenshot(firefoxDriver, screenshotName);
+            return element;
+        } catch (Exception e) {
+            System.out.println("⚠ Element with " + locatorType + " not found");
+            return null;
+        }
+    }
+    
     @Test
     @DisplayName("Element Location Using By Class - Firefox")
     public void testElementLocationFirefox() {
@@ -80,40 +104,26 @@ public class TestCase3_ElementLocationFirefox {
             
             try {
                 Thread.sleep(2000);
-                
                 System.out.println("\n--- Locating Elements Using By Class (Firefox) ---");
-                try {
-                    WebElement elementById = firefoxWait.until(
-                        ExpectedConditions.presenceOfElementLocated(By.id("checkBoxOption1"))
-                    );
-                    System.out.println("✓ Located element by ID: checkBoxOption1");
+                
+                WebElement elementById = locateAndReportWithWait(firefoxWait, By.id("checkBoxOption1"), "ID: checkBoxOption1", "Step3_FirefoxLocatedByID");
+                if (elementById != null) {
                     System.out.println("  Element tag: " + elementById.getTagName());
                     System.out.println("  Element type: " + elementById.getAttribute("type"));
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByID");
-                } catch (Exception e) {
-                    System.out.println("⚠ Element with ID 'checkBoxOption1' not found");
                 }
                 
-                try {
-                    WebElement elementByName = firefoxDriver.findElement(By.name("radioButton"));
-                    System.out.println("✓ Located element by Name: radioButton");
+                WebElement elementByName = locateAndReport(By.name("radioButton"), "Name: radioButton", "Step3_FirefoxLocatedByName");
+                if (elementByName != null) {
                     System.out.println("  Element type: " + elementByName.getAttribute("type"));
                     System.out.println("  Element value: " + elementByName.getAttribute("value"));
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByName");
-                } catch (Exception e) {
-                    System.out.println("⚠ Element with Name 'radioButton' not found");
                 }
                 
-                try {
-                    List<WebElement> elementsByClass = firefoxDriver.findElements(By.className("radio1"));
-                    if (elementsByClass.isEmpty()) {
-                        elementsByClass = firefoxDriver.findElements(By.className("wp-block-group"));
-                    }
-                    System.out.println("✓ Located " + elementsByClass.size() + " element(s) by Class Name");
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByClassName");
-                } catch (Exception e) {
-                    System.out.println("⚠ Elements with Class Name not found");
+                List<WebElement> elementsByClass = firefoxDriver.findElements(By.className("radio1"));
+                if (elementsByClass.isEmpty()) {
+                    elementsByClass = firefoxDriver.findElements(By.className("wp-block-group"));
                 }
+                System.out.println("✓ Located " + elementsByClass.size() + " element(s) by Class Name");
+                takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByClassName");
                 
                 List<WebElement> links = firefoxDriver.findElements(By.tagName("a"));
                 System.out.println("✓ Located " + links.size() + " element(s) by Tag Name: a (links)");
@@ -121,44 +131,17 @@ public class TestCase3_ElementLocationFirefox {
                 List<WebElement> inputs = firefoxDriver.findElements(By.tagName("input"));
                 System.out.println("✓ Located " + inputs.size() + " element(s) by Tag Name: input");
                 
-                try {
-                    WebElement elementByCss = firefoxDriver.findElement(By.cssSelector("input[type='radio']"));
-                    System.out.println("✓ Located element by CSS Selector: input[type='radio']");
+                WebElement elementByCss = locateAndReport(By.cssSelector("input[type='radio']"), "CSS Selector: input[type='radio']", "Step3_FirefoxLocatedByCSS");
+                if (elementByCss != null) {
                     System.out.println("  Element ID: " + elementByCss.getAttribute("id"));
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByCSS");
-                } catch (Exception e) {
-                    System.out.println("⚠ Element with CSS Selector not found");
                 }
                 
-                try {
-                    WebElement elementByXpath = firefoxDriver.findElement(
-                        By.xpath("//input[@type='radio']")
-                    );
-                    System.out.println("✓ Located element by XPath: //input[@type='radio']");
-                    System.out.println("  Element type: " + elementByXpath.getAttribute("type"));
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByXPath");
-                } catch (Exception e) {
-                    System.out.println("⚠ Element with XPath not found");
-                }
-                
-                try {
-                    WebElement elementByLinkText = firefoxDriver.findElement(By.linkText("Home"));
-                    System.out.println("✓ Located element by Link Text: Home");
+                WebElement elementByLinkText = locateAndReport(By.linkText("Home"), "Link Text: Home", "Step3_FirefoxLocatedByLinkText");
+                if (elementByLinkText != null) {
                     System.out.println("  Link href: " + elementByLinkText.getAttribute("href"));
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByLinkText");
-                } catch (Exception e) {
-                    System.out.println("⚠ Link with exact text 'Home' not found");
                 }
                 
-                try {
-                    WebElement elementByPartialLink = firefoxDriver.findElement(
-                        By.partialLinkText("Courses")
-                    );
-                    System.out.println("✓ Located element by Partial Link Text: Courses");
-                    takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedByPartialLinkText");
-                } catch (Exception e) {
-                    System.out.println("⚠ Link with partial text not found");
-                }
+                locateAndReport(By.partialLinkText("Courses"), "Partial Link Text: Courses", "Step3_FirefoxLocatedByPartialLinkText");
                 
             } catch (Exception e) {
                 System.out.println("Error during element location: " + e.getMessage());

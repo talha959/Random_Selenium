@@ -62,6 +62,77 @@ public class TestCase4_ElementActionsFirefox {
         }
     }
     
+    private WebElement findElementSafe(By locator, String elementName) {
+        try {
+            return firefoxDriver.findElement(locator);
+        } catch (Exception e) {
+            System.out.println("⚠ " + elementName + " not found");
+            return null;
+        }
+    }
+    
+    private void interactWithCheckbox(By locator, String elementName, String screenshotName) {
+        WebElement checkbox = findElementSafe(locator, elementName);
+        if (checkbox != null) {
+            System.out.println("Action 7: ✓ Located checkbox using " + elementName);
+            if (!checkbox.isSelected()) {
+                checkbox.click();
+                System.out.println("Action 8: ✓ Clicked checkbox");
+                takeScreenshot(firefoxDriver, screenshotName);
+            } else {
+                System.out.println("Action 8: ✓ Checkbox already selected");
+            }
+        }
+    }
+    
+    private void interactWithDropdown(By locator, String elementName, String optionToSelect, String screenshotName) {
+        WebElement dropdown = findElementSafe(locator, elementName);
+        if (dropdown != null) {
+            System.out.println("Action 9: ✓ Located dropdown using " + elementName);
+            Select select = new Select(dropdown);
+            List<WebElement> options = select.getOptions();
+            System.out.println("Action 9: ✓ Dropdown has " + options.size() + " options");
+            if (!options.isEmpty()) {
+                System.out.println("  First option: " + options.get(0).getText());
+                select.selectByVisibleText(optionToSelect);
+                System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
+            }
+            takeScreenshot(firefoxDriver, screenshotName);
+        }
+    }
+    
+    private void interactWithInput(By locator, String elementName, String textToEnter, String screenshotName) {
+        WebElement input = findElementSafe(locator, elementName);
+        if (input != null) {
+            System.out.println("Action 10: ✓ Located autocomplete input using " + elementName);
+            input.clear();
+            input.sendKeys(textToEnter);
+            System.out.println("  Entered text: '" + textToEnter + "' in autocomplete field");
+            takeScreenshot(firefoxDriver, screenshotName);
+        }
+    }
+    
+    private void interactWithLink(By locator, String elementName, String screenshotName) {
+        WebElement link = findElementSafe(locator, elementName);
+        if (link != null) {
+            System.out.println("Action 11: ✓ Located link using " + elementName);
+            String linkHref = link.getAttribute("href");
+            String linkText = link.getText();
+            System.out.println("  Link text: " + linkText + ", href: " + linkHref);
+            takeScreenshot(firefoxDriver, screenshotName);
+        }
+    }
+    
+    private void interactWithTable(By locator, String elementName, String screenshotName) {
+        WebElement table = findElementSafe(locator, elementName);
+        if (table != null) {
+            System.out.println("Action 12: ✓ Located table using " + elementName);
+            List<WebElement> tableRows = table.findElements(By.tagName("tr"));
+            System.out.println("  Table has " + tableRows.size() + " rows");
+            takeScreenshot(firefoxDriver, screenshotName);
+        }
+    }
+    
     @Test
     @DisplayName("Performing Actions on Web Elements - Firefox")
     public void testElementActionsFirefox() {
@@ -83,7 +154,6 @@ public class TestCase4_ElementActionsFirefox {
                 Thread.sleep(2000);
                 
                 System.out.println("\n--- Step 3: Locating Elements Using By Class (Firefox) ---");
-                
                 WebElement radioButton = firefoxWait.until(
                     ExpectedConditions.presenceOfElementLocated(By.name("radioButton"))
                 );
@@ -91,7 +161,6 @@ public class TestCase4_ElementActionsFirefox {
                 takeScreenshot(firefoxDriver, "Step3_FirefoxLocatedRadioButton");
                 
                 System.out.println("\n--- Step 4: Performing Actions on Web Elements (Firefox) ---");
-                
                 String radioType = radioButton.getAttribute("type");
                 String radioId = radioButton.getAttribute("id");
                 String radioValue = radioButton.getAttribute("value");
@@ -99,85 +168,20 @@ public class TestCase4_ElementActionsFirefox {
                                  ", ID: " + radioId + ", Value: " + radioValue);
                 takeScreenshot(firefoxDriver, "Step4_FirefoxAction1_RadioAttributes");
                 
-                boolean isDisplayed = radioButton.isDisplayed();
-                System.out.println("Action 2: ✓ Element is displayed: " + isDisplayed);
-                
-                boolean isEnabled = radioButton.isEnabled();
-                System.out.println("Action 3: ✓ Element is enabled: " + isEnabled);
-                
-                boolean initiallySelected = radioButton.isSelected();
-                System.out.println("Action 4: ✓ Radio button initially selected: " + initiallySelected);
+                System.out.println("Action 2: ✓ Element is displayed: " + radioButton.isDisplayed());
+                System.out.println("Action 3: ✓ Element is enabled: " + radioButton.isEnabled());
+                System.out.println("Action 4: ✓ Radio button initially selected: " + radioButton.isSelected());
                 
                 radioButton.click();
                 System.out.println("Action 5: ✓ Clicked radio button");
                 takeScreenshot(firefoxDriver, "Step4_FirefoxAction5_ClickedRadio");
+                System.out.println("Action 6: ✓ Radio button is selected: " + radioButton.isSelected());
                 
-                boolean isSelected = radioButton.isSelected();
-                System.out.println("Action 6: ✓ Radio button is selected: " + isSelected);
-                
-                try {
-                    WebElement checkbox = firefoxDriver.findElement(By.id("checkBoxOption1"));
-                    System.out.println("Action 7: ✓ Located checkbox using By.id('checkBoxOption1')");
-                    
-                    if (!checkbox.isSelected()) {
-                        checkbox.click();
-                        System.out.println("Action 8: ✓ Clicked checkbox");
-                        takeScreenshot(firefoxDriver, "Step4_FirefoxAction8_ClickedCheckbox");
-                    } else {
-                        System.out.println("Action 8: ✓ Checkbox already selected");
-                    }
-                } catch (Exception e) {
-                    System.out.println("⚠ Checkbox not found");
-                }
-                
-                try {
-                    WebElement dropdown = firefoxDriver.findElement(By.id("dropdown-class-example"));
-                    System.out.println("Action 9: ✓ Located dropdown using By.id('dropdown-class-example')");
-                    
-                    Select select = new Select(dropdown);
-                    List<WebElement> options = select.getOptions();
-                    System.out.println("Action 9: ✓ Dropdown has " + options.size() + " options");
-                    if (!options.isEmpty()) {
-                        System.out.println("  First option: " + options.get(0).getText());
-                        select.selectByVisibleText("Selenium");
-                        System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
-                    }
-                    takeScreenshot(firefoxDriver, "Step4_FirefoxAction9_DropdownLocated");
-                } catch (Exception e) {
-                    System.out.println("⚠ Dropdown not found");
-                }
-                
-                try {
-                    WebElement autocomplete = firefoxDriver.findElement(By.id("autocomplete"));
-                    System.out.println("Action 10: ✓ Located autocomplete input using By.id('autocomplete')");
-                    autocomplete.clear();
-                    autocomplete.sendKeys("Canada");
-                    System.out.println("  Entered text: 'Canada' in autocomplete field");
-                    takeScreenshot(firefoxDriver, "Step4_FirefoxAction10_Autocomplete");
-                } catch (Exception e) {
-                    System.out.println("⚠ Autocomplete input not found");
-                }
-                
-                try {
-                    WebElement homeLink = firefoxDriver.findElement(By.linkText("Home"));
-                    System.out.println("Action 11: ✓ Located link using By.linkText('Home')");
-                    String linkHref = homeLink.getAttribute("href");
-                    String linkText = homeLink.getText();
-                    System.out.println("  Link text: " + linkText + ", href: " + linkHref);
-                    takeScreenshot(firefoxDriver, "Step4_FirefoxAction11_LinkLocated");
-                } catch (Exception e) {
-                    System.out.println("⚠ Link not found");
-                }
-                
-                try {
-                    WebElement table = firefoxDriver.findElement(By.id("product"));
-                    System.out.println("Action 12: ✓ Located table using By.id('product')");
-                    List<WebElement> tableRows = table.findElements(By.tagName("tr"));
-                    System.out.println("  Table has " + tableRows.size() + " rows");
-                    takeScreenshot(firefoxDriver, "Step4_FirefoxAction12_TableLocated");
-                } catch (Exception e) {
-                    System.out.println("⚠ Table not found");
-                }
+                interactWithCheckbox(By.id("checkBoxOption1"), "By.id('checkBoxOption1')", "Step4_FirefoxAction8_ClickedCheckbox");
+                interactWithDropdown(By.id("dropdown-class-example"), "By.id('dropdown-class-example')", "Selenium", "Step4_FirefoxAction9_DropdownLocated");
+                interactWithInput(By.id("autocomplete"), "By.id('autocomplete')", "Canada", "Step4_FirefoxAction10_Autocomplete");
+                interactWithLink(By.linkText("Home"), "By.linkText('Home')", "Step4_FirefoxAction11_LinkLocated");
+                interactWithTable(By.id("product"), "By.id('product')", "Step4_FirefoxAction12_TableLocated");
                 
             } catch (Exception e) {
                 System.out.println("Error during element actions: " + e.getMessage());

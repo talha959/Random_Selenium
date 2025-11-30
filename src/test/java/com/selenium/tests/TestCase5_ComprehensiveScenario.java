@@ -65,6 +65,82 @@ public class TestCase5_ComprehensiveScenario {
         }
     }
     
+    private WebElement locateElementWithWait(By locator, String description) {
+        WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        System.out.println("✓ Located " + description);
+        return element;
+    }
+    
+    private WebElement locateElement(By locator, String description) {
+        WebElement element = chromeDriver.findElement(locator);
+        System.out.println("✓ Located " + description);
+        return element;
+    }
+    
+    private void locateElementsByTag(String tagName, String description) {
+        List<WebElement> elements = chromeDriver.findElements(By.tagName(tagName));
+        System.out.println("✓ Located " + elements.size() + " " + description);
+    }
+    
+    private void interactWithRadio(WebElement radioButton, String screenshotName) {
+        System.out.println("Action 1: ✓ Radio button attributes - Type: " + radioButton.getAttribute("type") + 
+                         ", ID: " + radioButton.getAttribute("id") + ", Value: " + radioButton.getAttribute("value") + 
+                         ", Displayed: " + radioButton.isDisplayed() + ", Enabled: " + radioButton.isEnabled());
+        radioButton.click();
+        System.out.println("Action 2: ✓ Clicked radio button");
+        System.out.println("  Radio button is selected: " + radioButton.isSelected());
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
+    private void interactWithCheckbox(WebElement checkbox, String screenshotName) {
+        if (!checkbox.isSelected()) {
+            checkbox.click();
+            System.out.println("Action 3: ✓ Clicked checkbox");
+        } else {
+            System.out.println("Action 3: ✓ Checkbox already selected");
+        }
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
+    private void interactWithDropdown(WebElement dropdown, String optionToSelect, String screenshotName) {
+        Select select = new Select(dropdown);
+        List<WebElement> options = select.getOptions();
+        System.out.println("Action 4: ✓ Dropdown has " + options.size() + " options");
+        if (!options.isEmpty()) {
+            select.selectByVisibleText(optionToSelect);
+            System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
+        }
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
+    private void interactWithInput(WebElement input, String text, String screenshotName) {
+        input.clear();
+        input.sendKeys(text);
+        System.out.println("Action 5: ✓ Entered text in autocomplete field");
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
+    private void interactWithLink(WebElement link) {
+        System.out.println("Action 6: ✓ Link attributes - Text: " + link.getText() + ", Href: " + link.getAttribute("href"));
+    }
+    
+    private void interactWithTable(WebElement table, String screenshotName) {
+        List<WebElement> tableRows = table.findElements(By.tagName("tr"));
+        System.out.println("Action 7: ✓ Web table has " + tableRows.size() + " rows");
+        List<WebElement> tableHeaders = table.findElements(By.tagName("th"));
+        if (!tableHeaders.isEmpty()) {
+            System.out.println("  Table headers: " + tableHeaders.get(0).getText() + ", " + 
+                             tableHeaders.get(1).getText() + ", " + tableHeaders.get(2).getText());
+        }
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
+    private void scrollToElement(WebElement element, String screenshotName) {
+        ((JavascriptExecutor) chromeDriver).executeScript("arguments[0].scrollIntoView(true);", element);
+        System.out.println("Action 12: ✓ Scrolled to table element");
+        takeScreenshot(chromeDriver, screenshotName);
+    }
+    
     @Test
     @DisplayName("Comprehensive Usability and Functionality Test")
     public void testComprehensiveScenario() {
@@ -96,101 +172,30 @@ public class TestCase5_ComprehensiveScenario {
             Assertions.assertFalse(title.isEmpty());
             
             System.out.println("\n--- Step 3: Locate Elements Using By Class ---");
-            
-            WebElement radioButton = wait.until(
-                ExpectedConditions.presenceOfElementLocated(By.name("radioButton"))
-            );
-            System.out.println("✓ Located radio button using By.name('radioButton')");
-            
-            WebElement checkbox = chromeDriver.findElement(By.id("checkBoxOption1"));
-            System.out.println("✓ Located checkbox using By.id('checkBoxOption1')");
-            
-            WebElement dropdown = chromeDriver.findElement(By.id("dropdown-class-example"));
-            System.out.println("✓ Located dropdown using By.id('dropdown-class-example')");
-            
-            WebElement tableElement = chromeDriver.findElement(By.id("product"));
-            System.out.println("✓ Located table using By.id('product')");
-            
-            WebElement autocomplete = chromeDriver.findElement(By.id("autocomplete"));
-            System.out.println("✓ Located autocomplete using By.id('autocomplete')");
-            
-            List<WebElement> allInputs = chromeDriver.findElements(By.tagName("input"));
-            System.out.println("✓ Located " + allInputs.size() + " input elements using By.tagName('input')");
-            
-            List<WebElement> allLinks = chromeDriver.findElements(By.tagName("a"));
-            System.out.println("✓ Located " + allLinks.size() + " link elements using By.tagName('a')");
-            
-            WebElement homeLink = chromeDriver.findElement(By.linkText("Home"));
-            System.out.println("✓ Located link using By.linkText('Home')");
-            
+            WebElement radioButton = locateElementWithWait(By.name("radioButton"), "radio button using By.name('radioButton')");
+            WebElement checkbox = locateElement(By.id("checkBoxOption1"), "checkbox using By.id('checkBoxOption1')");
+            WebElement dropdown = locateElement(By.id("dropdown-class-example"), "dropdown using By.id('dropdown-class-example')");
+            WebElement tableElement = locateElement(By.id("product"), "table using By.id('product')");
+            WebElement autocomplete = locateElement(By.id("autocomplete"), "autocomplete using By.id('autocomplete')");
+            locateElementsByTag("input", "input elements using By.tagName('input')");
+            locateElementsByTag("a", "link elements using By.tagName('a')");
+            WebElement homeLink = locateElement(By.linkText("Home"), "link using By.linkText('Home')");
             takeScreenshot(chromeDriver, "Step3_LocatedAllElements");
             
             System.out.println("\n--- Step 4: Perform Actions on Located Web Elements ---");
+            interactWithRadio(radioButton, "Step4_Action2_ClickedRadio");
+            interactWithCheckbox(checkbox, "Step4_Action3_CheckboxInteraction");
+            interactWithDropdown(dropdown, "Selenium", "Step4_Action4_DropdownSelected");
+            interactWithInput(autocomplete, "Canada", "Step4_Action5_Autocomplete");
+            interactWithLink(homeLink);
+            interactWithTable(tableElement, "Step4_Action7_TableInfo");
             
-            String radioType = radioButton.getAttribute("type");
-            String radioId = radioButton.getAttribute("id");
-            String radioValue = radioButton.getAttribute("value");
-            boolean isRadioDisplayed = radioButton.isDisplayed();
-            boolean isRadioEnabled = radioButton.isEnabled();
-            System.out.println("Action 1: ✓ Radio button attributes - Type: " + radioType + 
-                             ", ID: " + radioId + ", Value: " + radioValue + 
-                             ", Displayed: " + isRadioDisplayed + ", Enabled: " + isRadioEnabled);
-            
-            radioButton.click();
-            System.out.println("Action 2: ✓ Clicked radio button");
-            boolean isRadioSelected = radioButton.isSelected();
-            System.out.println("  Radio button is selected: " + isRadioSelected);
-            takeScreenshot(chromeDriver, "Step4_Action2_ClickedRadio");
-            
-            if (!checkbox.isSelected()) {
-                checkbox.click();
-                System.out.println("Action 3: ✓ Clicked checkbox");
-            } else {
-                System.out.println("Action 3: ✓ Checkbox already selected");
-            }
-            takeScreenshot(chromeDriver, "Step4_Action3_CheckboxInteraction");
-            
-            Select select = new Select(dropdown);
-            List<WebElement> options = select.getOptions();
-            System.out.println("Action 4: ✓ Dropdown has " + options.size() + " options");
-            if (!options.isEmpty()) {
-                select.selectByVisibleText("Selenium");
-                System.out.println("  Selected option: " + select.getFirstSelectedOption().getText());
-            }
-            takeScreenshot(chromeDriver, "Step4_Action4_DropdownSelected");
-            
-            autocomplete.clear();
-            autocomplete.sendKeys("Canada");
-            System.out.println("Action 5: ✓ Entered text in autocomplete field");
-            takeScreenshot(chromeDriver, "Step4_Action5_Autocomplete");
-            
-            String linkHref = homeLink.getAttribute("href");
-            String linkText = homeLink.getText();
-            System.out.println("Action 6: ✓ Link attributes - Text: " + linkText + ", Href: " + linkHref);
-            
-            List<WebElement> tableRows = tableElement.findElements(By.tagName("tr"));
-            System.out.println("Action 7: ✓ Web table has " + tableRows.size() + " rows");
-            List<WebElement> tableHeaders = tableElement.findElements(By.tagName("th"));
-            if (!tableHeaders.isEmpty()) {
-                System.out.println("  Table headers: " + tableHeaders.get(0).getText() + ", " + 
-                                 tableHeaders.get(1).getText() + ", " + tableHeaders.get(2).getText());
-            }
-            takeScreenshot(chromeDriver, "Step4_Action7_TableInfo");
-            
-            String currentUrl = chromeDriver.getCurrentUrl();
-            System.out.println("Action 9: ✓ Current URL: " + currentUrl);
-            
-            String pageSource = chromeDriver.getPageSource();
-            System.out.println("Action 10: ✓ Page source length: " + pageSource.length() + " characters");
-            
+            System.out.println("Action 9: ✓ Current URL: " + chromeDriver.getCurrentUrl());
+            System.out.println("Action 10: ✓ Page source length: " + chromeDriver.getPageSource().length() + " characters");
             org.openqa.selenium.Dimension windowSize = chromeDriver.manage().window().getSize();
-            System.out.println("Action 11: ✓ Window size - Width: " + windowSize.getWidth() + 
-                             ", Height: " + windowSize.getHeight());
+            System.out.println("Action 11: ✓ Window size - Width: " + windowSize.getWidth() + ", Height: " + windowSize.getHeight());
             
-            ((JavascriptExecutor) chromeDriver)
-                .executeScript("arguments[0].scrollIntoView(true);", tableElement);
-            System.out.println("Action 12: ✓ Scrolled to table element");
-            takeScreenshot(chromeDriver, "Step4_Action12_ScrolledToTable");
+            scrollToElement(tableElement, "Step4_Action12_ScrolledToTable");
             
             System.out.println("\n✓ All usability and functionality checks completed successfully!");
             takeScreenshot(chromeDriver, "Step4_FinalResult");
